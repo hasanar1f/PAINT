@@ -19,6 +19,11 @@ model = LlavaForConditionalGeneration.from_pretrained(
 )
 processor = AutoProcessor.from_pretrained(model_id)
 
+model.config.fast_vlm_config = {
+    "spatial_budget": 0,
+    "alpha_vision_token_budget": 1,
+}
+
 
 if quantization is False: # hot fix for: .to` is not supported for `4-bit` or `8-bit` bitsandbytes models. 
     # Please use the model as it is, since the model has already been set to the correct devices and casted to the correct `dtype`.
@@ -31,6 +36,10 @@ inputs = processor(prompt, raw_image, return_tensors='pt').to("cuda:0", torch.fl
 # Measure generation stage time
 generation_start_time = time.time()
 with torch.inference_mode():
-    output = model.generate(**inputs, do_sample=False, output_attentions=False, return_dict=True)
+    output = model.generate(**inputs,
+                            do_sample=False,
+                            output_attentions=False,
+                            max_length=256,
+                            )
 
 print(processor.decode(output[0], skip_special_tokens=True))
