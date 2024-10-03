@@ -14,7 +14,7 @@
 # limitations under the License.
 """PyTorch Llava-NeXT model."""
 
-import math, time
+import math
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
@@ -22,7 +22,6 @@ import numpy as np
 import torch
 import torch.utils.checkpoint
 from torch import nn
-import torch.nn.functional as F
 
 from ... import PreTrainedModel
 from ...activations import ACT2FN
@@ -42,56 +41,6 @@ from .configuration_llava_next import LlavaNextConfig
 logger = logging.get_logger(__name__)
 
 _CONFIG_FOR_DOC = "LlavaNextConfig"
-
-class ViT_Attn_Hook:
-    def __init__(self, model, layer_id, num_heads):
-        self.model = model
-        self.layer_id = layer_id
-        self.num_heads = num_heads
-        self.outputs = {}
-        self.key_hook_handle = None
-        self.query_hook_handle = None
-
-        # register hooks
-        self._register_hooks()
-
-    def _hook_key(self, module, input, output):
-        self.outputs['key_output'] = output
-
-    def _hook_query(self, module, input, output):
-        self.outputs['query_output'] = output
-
-    def _register_hooks(self):
-        self.key_hook_handle = self.model.vision_tower.vision_model.encoder.layers[self.layer_id].self_attn.k_proj.register_forward_hook(self._hook_key)
-        self.query_hook_handle = self.model.vision_tower.vision_model.encoder.layers[self.layer_id].self_attn.q_proj.register_forward_hook(self._hook_query)
-    
-
-    def _remove_hooks(self):
-        if self.key_hook_handle:
-            self.key_hook_handle.remove()
-        if self.query_hook_handle:
-            self.query_hook_handle.remove()
-
-    def get_attn(self):
-        key = self.outputs.get('key_output')
-        query = self.outputs.get('query_output')
-
-        if key is None or query is None:
-            raise ValueError("Key or query output is not available. Ensure hooks are registered and the model has been run.")
-        
-        batch_size, num_tokens, embedding_dim = query.shape
-        head_dim = embedding_dim // self.num_heads
-
-        query = query.view(batch_size, num_tokens, self.num_heads, head_dim).transpose(1, 2)
-        key = key.view(batch_size, num_tokens, self.num_heads, head_dim).transpose(1, 2)
-
-        attn = (query @ key.transpose(-2, -1)) * head_dim ** -0.5
-        attn = F.softmax(attn, dim=-1)
-
-        # remove hooks
-        self._remove_hooks()
-
-        return attn
 
 
 def get_anyres_image_grid_shape(image_size, grid_pinpoints, patch_size):
@@ -164,24 +113,19 @@ def image_size_to_num_patches(image_size, grid_pinpoints, patch_size: int):
 
 def unpad_image(tensor, original_size):
     """
-    Unpads a PyTorch tensor of a padded and resized image or mask.
-    A simple hack on top of the original implementation so that this
-    function can handle both images and masks.
+    Unpads a PyTorch tensor of a padded and resized image.
 
     Args:
         tensor (`torch.Tensor`):
-            The image or mask tensor, assumed to be of shape (num_channels, height, width) for images or (height, width) for masks.
+            The image tensor, assumed to be of shape (num_channels, height, width).
         original_size (`tuple`):
             The original size of the image (height, width).
 
     Returns:
-        `torch.Tensor`: The unpadded image or mask tensor.
+        `torch.Tensor`: The unpadded image tensor.
     """
     original_height, original_width = original_size
-    if tensor.ndim == 3:
-        current_height, current_width = tensor.shape[1:]
-    else:
-        current_height, current_width = tensor.shape
+    current_height, current_width = tensor.shape[1:]
 
     original_aspect_ratio = original_width / original_height
     current_aspect_ratio = current_width / current_height
@@ -190,18 +134,12 @@ def unpad_image(tensor, original_size):
         scale_factor = current_width / original_width
         new_height = int(original_height * scale_factor)
         padding = (current_height - new_height) // 2
-        if tensor.ndim == 3:
-            unpadded_tensor = tensor[:, padding : current_height - padding, :]
-        else:
-            unpadded_tensor = tensor[padding : current_height - padding, :]
+        unpadded_tensor = tensor[:, padding : current_height - padding, :]
     else:
         scale_factor = current_height / original_height
         new_width = int(original_width * scale_factor)
         padding = (current_width - new_width) // 2
-        if tensor.ndim == 3:
-            unpadded_tensor = tensor[:, :, padding : current_width - padding]
-        else:
-            unpadded_tensor = tensor[:, padding : current_width - padding]
+        unpadded_tensor = tensor[:, :, padding : current_width - padding]
 
     return unpadded_tensor
 
@@ -417,7 +355,6 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
         self.language_model = AutoModelForCausalLM.from_config(
             config.text_config, attn_implementation=config._attn_implementation
         )
-        self.vit_to_llm_mapping = None
         self.pad_token_id = self.config.pad_token_id if self.config.pad_token_id is not None else -1
         self._padding_side = "left"  # set it to left by default, user can use setter to change padding_sides
         self.post_init()
@@ -467,92 +404,6 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
         self.config.text_config.vocab_size = model_embeds.num_embeddings
         self.vocab_size = model_embeds.num_embeddings
         return model_embeds
-    
-    # ################################ HiCompRes ################################
-
-    def add_spatial_tokens(self, masks, num_spatial_tokens):
-        # mask torch.tensor tuple([num_patches, num_vision_tokens])
-        # num_spatial_tokens: int, usually 0
-        spatial_masks = []
-        for mask in masks:
-            num_patches = mask.shape[0]
-            num_vision_tokens = mask.shape[1]
-            gap = num_vision_tokens // num_spatial_tokens
-            indices = torch.arange(0, num_vision_tokens-1, gap)
-            for i in range(num_patches):
-                mask[i, indices] = True
-            spatial_masks.append(mask)
-        return tuple(spatial_masks)
-    
-    def get_sub_img_budgets(self, spatial_distribution, num_patches, sub_img_budget, num_vision_tokens, image_size):
-        # spatial_distribution: torch.tensor [num_tokens]
-        # num_patches: int
-        # sub_img_budget: int
-        # num_vision_tokens: int
-        # image_size: tuple[int, int]
-
-        num_sub_img_patches = num_patches - 1
-    
-        num_patch_width, num_patch_height = get_anyres_image_grid_shape(
-                    image_size,
-                    self.config.image_grid_pinpoints,
-                    self.config.vision_config.image_size,
-        )
-
-        assert num_patch_width * num_patch_height == num_sub_img_patches
-        
-        spatial_distribution = spatial_distribution.reshape(num_patch_height, num_patch_width, -1)  # [num_patches_height, num_patches_width, num_vision_tokens]
-        sum_img_mask = spatial_distribution.sum(dim=-1)  # [num_patches_height, num_patches_width]
-        sum_img_mask = sum_img_mask.reshape(-1)  # [num_sub_img_patches]    
-
-        # Ensure the budget ratio is calculated correctly
-        budget_ratio = sum_img_mask / sum_img_mask.sum()  # [num_other_patches]
-        num_topk_others = (budget_ratio * sub_img_budget).int()  # [num_other_patches]
-
-        return torch.clamp(num_topk_others, max=num_vision_tokens)
-
-    def HiCompRes_token_selection(self,top_layer_attn,bottom_layer_attn, num_patches, full_image_patch, num_vision_tokens, alpha_vision_token_budget,beta_sub_images_budget,image_sizes):
-        # top_layer_attn: tuples of tensors shape: [sum(num_patches), num_heads, num_context, num_context]
-        # bottom_layer_attn: tuples of tensors shape: [sum(num_patches), num_heads, num_context, num_context]
-        # num_patches: List[int]
-        # full_image_patch: int (usually 0)
-        # num_vision_tokens: int, usually 576
-        # alpha_vision_token_budget: float, how much we want to include from full image
-        # beta_sub_images_budget: float, how much we want to include from sub-images
-        # image_sizes: List[tuple], each tuple is the size of the image
-        
-        top_layer_attn = top_layer_attn[:,:,0,-num_vision_tokens:] # class token attn 
-        bottom_layer_attn = bottom_layer_attn[:,:,0,-num_vision_tokens:] # class token attn
-        top_layer_attn = torch.split(top_layer_attn, num_patches, dim=0) # tuple of [num_patches, num_heads, num_vision_tokens]
-        bottom_layer_attn = torch.split(bottom_layer_attn, num_patches, dim=0) # tuple of [num_patches, num_heads, num_vision_tokens]
-        masks = []
-        for idx, top_attn, bottom_attn in zip(range(len(num_patches)), top_layer_attn, bottom_layer_attn):
-            bottom_attn = bottom_attn.sum(dim=1) # [num_patches, num_vision_tokens] # aggregate over all heads
-            top_attn = top_attn.sum(dim=1) # [num_patches, num_vision_tokens] # aggregate over all heads
-            mask = torch.zeros_like(bottom_attn, dtype=torch.bool) # [num_patches, num_vision_tokens]
-            num_patch = bottom_attn.shape[0]
-            num_total_budget = int(num_patch * num_vision_tokens * alpha_vision_token_budget)
-            full_img_budget = min(int(num_total_budget * (1-beta_sub_images_budget)), num_vision_tokens)
-            total_sub_img_budget = min(num_total_budget-full_img_budget, (num_patch-1)*num_vision_tokens)
-            
-            full_bottom_attn = bottom_attn[full_image_patch] # [num_vision_tokens]
-            full_top_attn = top_attn[full_image_patch] # [num_vision_tokens]
-            sub_img_attn = bottom_attn[full_image_patch+1:] # [num_patch-1, num_vision_tokens]
-
-            # select topk tokens for the full-image
-            mask[full_image_patch, full_bottom_attn.topk(full_img_budget, largest=True).indices] = True
-
-            if beta_sub_images_budget > 0: # token selection for sub-images
-                spatial_distribution = torch.zeros_like(top_attn[full_image_patch], dtype=torch.bool)
-                spatial_distribution[full_top_attn.topk(int(num_vision_tokens*beta_sub_images_budget), largest=True).indices] = True
-                sub_img_budgets = self.get_sub_img_budgets(spatial_distribution, num_patch, total_sub_img_budget, num_vision_tokens, image_sizes[idx])
-                
-                # select topk tokens for each sub-image
-                for i, num_topk_other in enumerate(sub_img_budgets):
-                    mask[i+1, sub_img_attn[i].topk(num_topk_other, largest=True).indices] = True
-
-            masks.append(mask)
-        return tuple(masks)
 
     def _merge_input_ids_with_image_features(
         self,
@@ -661,6 +512,8 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
             # ! in llava 1.6, number of patches is variable
             num_images = feature_lens.size(0)
             num_image_features, embed_dim = image_features.shape
+            if feature_lens.sum() != num_image_features:
+                raise ValueError(f"{feature_lens=} / {feature_lens.sum()} != {image_features.shape=}")
             batch_size = input_ids.shape[0]
             _left_padding = torch.any(attention_mask[:, 0] == 0)
             _right_padding = torch.any(attention_mask[:, -1] == 0)
@@ -692,8 +545,9 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
                 )
             # Compute the maximum embed dimension
             # max_image_feature_lens is max_feature_lens per batch
+            feature_lens = feature_lens.to(input_ids.device)
             feature_lens_batch = feature_lens.split(num_special_image_tokens.tolist(), dim=0)
-            feature_lens_batch_sum = torch.tensor([x.sum() for x in feature_lens_batch], device=feature_lens.device)
+            feature_lens_batch_sum = torch.tensor([x.sum() for x in feature_lens_batch], device=input_ids.device)
             embed_sequence_lengths = (
                 (attention_mask == 1).long().sum(-1) - num_special_image_tokens + feature_lens_batch_sum
             )
@@ -724,9 +578,9 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
         final_attention_mask = torch.zeros(
             batch_size, max_embed_dim, dtype=attention_mask.dtype, device=inputs_embeds.device
         )
-        final_labels = None
-        if labels is not None:
-            final_labels = torch.full_like(final_attention_mask, ignore_index).to(torch.long)
+        final_input_ids = torch.full(
+            (batch_size, max_embed_dim), self.pad_token_id, dtype=input_ids.dtype, device=inputs_embeds.device
+        )
         # In case the Vision model or the Language model has been offloaded to CPU, we need to manually
         # set the corresponding tensors into their correct target device.
         target_device = inputs_embeds.device
@@ -736,12 +590,17 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
             text_to_overwrite.to(target_device),
         )
         attention_mask = attention_mask.to(target_device)
+        input_ids = input_ids.to(target_device)
 
         # 4. Fill the embeddings based on the mask. If we have ["hey" "<image>", "how", "are"]
         # we need to index copy on [0, 577, 578, 579] for the text and [1:576] for the image features
         final_embedding[batch_indices, text_to_overwrite] = inputs_embeds[batch_indices, non_image_indices]
         final_attention_mask[batch_indices, text_to_overwrite] = attention_mask[batch_indices, non_image_indices]
+        final_input_ids[batch_indices, text_to_overwrite] = input_ids[batch_indices, non_image_indices]
+        final_labels = None
         if labels is not None:
+            labels = labels.to(target_device)
+            final_labels = torch.full_like(final_attention_mask, ignore_index).to(torch.long)
             final_labels[batch_indices, text_to_overwrite] = labels[batch_indices, non_image_indices]
 
         # 5. Fill the embeddings corresponding to the images. Anything that is not `text_positions` needs filling (#29835)
@@ -756,6 +615,7 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
 
             if left_padding:
                 # exclude padding on the left
+                max_embed_dim = max_embed_dim.to(target_device)
                 val = (max_embed_dim - embed_indices) <= embed_seq_lens
             else:
                 # exclude padding on the right
@@ -773,61 +633,42 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
         final_attention_mask |= image_to_overwrite
         position_ids = (final_attention_mask.cumsum(-1) - 1).masked_fill_((final_attention_mask == 0), 1)
 
-        # Calculate the image feature indices in the final embedding # remove later
-        image_indices = []
-        for i in range(batch_size):
-            image_positions = torch.where(image_to_overwrite[i])[0]
-            image_indices.append(image_positions)
+        return final_embedding, final_attention_mask, position_ids, final_labels, final_input_ids
 
-        return final_embedding, final_attention_mask, position_ids, final_labels, image_indices
-
-    def pack_image_features(self, image_features, image_sizes, image_newline=None, image_features_masks=None):
+    def pack_image_features(self, image_features, image_sizes, image_newline=None):
         """
         Reshape, unpad and then pack each image_feature into a single image_features tensor containing all visual vectors.
 
         Args:
-            image_features (`List[torch.Tensor]` of length num_images, each of shape `(num_patches, image_length, embed_dim)`):
+            image_features (`List[torch.Tensor]` of length num_images, each of shape `(num_patches, image_length, embed_dim)`)
                 List of image feature tensor, each contains all the visual feature of all patches.
-            image_sizes (`torch.Tensor` of shape `(num_images, 2)`):
-                Actual image size of each image (H, W).
-            image_newline (`torch.Tensor` of shape `(embed_dim)`):
+            image_sizes (`torch.Tensor` of shape `(num_images, 2)`)
+                Actual image size of each images (H, W).
+            image_newline (`torch.Tensor` of shape `(embed_dim)`)
                 New line embedding vector.
-            image_features_masks Tuple of (`torch.Tensor` of shape `(num_patches, num_tokens)`):
-                Mask for selecting tokens.
         Returns:
-            image_features (`torch.Tensor` of shape `(all_feat_len, embed_dim)`):
-                Concatenated image features.
-            feature_lens (`List[int]`):
-                Token length of each image in image_features.
+            image_features (`torch.Tensor` of shape `(all_feat_len, embed_dim)`)
+            feature_lens (`List[int]`)
+                token length of each image in image_features
         """
         new_image_features = []
         feature_lens = []
-        for image_idx, (image_feature, image_features_mask) in enumerate(zip(image_features, image_features_masks)):
+        for image_idx, image_feature in enumerate(image_features):
             if image_feature.shape[0] > 1:
-                base_image_feature = image_feature[0] # [576, 4096]
-                base_image_mask = image_features_mask[0] # [576]
-                reduced_base_image_feature = base_image_feature[base_image_mask.bool()] # [reduced, 4096]
-                image_feature = image_feature[1:] # [4, 576, 4096]
-                other_images_mask = image_features_mask[1:] # [4, 576]
-                height = width = self.config.vision_config.image_size // self.config.vision_config.patch_size # 24
+                base_image_feature = image_feature[0]
+                image_feature = image_feature[1:]
+                height = width = self.config.vision_config.image_size // self.config.vision_config.patch_size
                 if height * width != base_image_feature.shape[0]:
                     raise ValueError("The number of patches is not consistent with the image size.")
-                
-                
                 num_patch_width, num_patch_height = get_anyres_image_grid_shape(
                     image_sizes[image_idx],
                     self.config.image_grid_pinpoints,
                     self.config.vision_config.image_size,
-                ) # (2, 2)
-                image_feature = image_feature.view(num_patch_height, num_patch_width, height, width, -1) # [2, 2, 24, 24, 4096]
-                other_images_mask = other_images_mask.view(num_patch_height, num_patch_width, height, width) # [2, 2, 24, 24]
-                image_feature = image_feature.permute(4, 0, 2, 1, 3).contiguous() # [4096, 2, 24, 2, 24]
-                other_images_mask = other_images_mask.permute(0, 2, 1, 3).contiguous() # [2, 24, 2, 24]
-                image_feature = image_feature.flatten(1, 2).flatten(2, 3) # [4096, 48, 48]
-                other_images_mask = other_images_mask.flatten(0, 1).flatten(1, 2) # [48, 48]
-                image_feature = unpad_image(image_feature, image_sizes[image_idx]) # [4096, 48, 48] assuming no unpadding
-                other_images_mask = unpad_image(other_images_mask, image_sizes[image_idx]) # [48, 48] assuming no unpadding
-
+                )
+                image_feature = image_feature.view(num_patch_height, num_patch_width, height, width, -1)
+                image_feature = image_feature.permute(4, 0, 2, 1, 3).contiguous()
+                image_feature = image_feature.flatten(1, 2).flatten(2, 3)
+                image_feature = unpad_image(image_feature, image_sizes[image_idx])
                 if image_newline is not None:
                     image_feature = torch.cat(
                         (
@@ -835,21 +676,9 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
                             image_newline[:, None, None].expand(*image_feature.shape[:-1], 1).to(image_feature.dtype),
                         ),
                         dim=-1,
-                    ) # [4096, 48, 49]
-                    other_images_mask = torch.cat(
-                        (
-                            other_images_mask,
-                            torch.ones(other_images_mask.shape[0], 1, device=other_images_mask.device),  # [42, 1]
-                        ),
-                        dim=-1,
-                    ) # [48,49]
-
-                # applying mask to reduce
-                image_feature = image_feature.flatten(1, 2) # [4096, 48*49]
-                other_images_mask = other_images_mask.flatten() # [48*49]
-                reduced_image_feature = image_feature[:, other_images_mask.bool()] # [4096, reduced]
-                reduced_image_feature = reduced_image_feature.transpose(0, 1) # [reduced, 4096]
-                image_feature = torch.cat((reduced_base_image_feature, reduced_image_feature), dim=0) # [reduced+reduced, 4096]
+                    )
+                image_feature = image_feature.flatten(1, 2).transpose(0, 1)
+                image_feature = torch.cat((base_image_feature, image_feature), dim=0)
             else:
                 image_feature = image_feature[0]
                 if image_newline is not None:
@@ -925,7 +754,6 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
         )
 
         if inputs_embeds is None:
-            self.prefill_time = -1 # reset prefill time
             # 1. Extract the input embeddings
             # In case image_token_index is not in the embeddings (extra token but embedding don't have it)
             for_inputs_embeds_ids = input_ids.clone()
@@ -954,25 +782,6 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
                     # otherwise has to be stacked from list of (num_patches, num_channels, height, width)
                     raise ValueError(f"pixel_values of shape {pixel_values.shape}, expect to be of 4 or 5 dimensions")
 
-
-
-
-                # ====================== HiResOpt ======================
-                # todo
-
-                # config params
-                if self.config.fast_vlm_config is not None:
-                    alpha_vision_token_budget = self.config.fast_vlm_config.get("alpha_vision_token_budget", 1.0)
-                    beta_sub_images_budget = self.config.fast_vlm_config.get("beta_sub_images_budget", 1.0)
-                    spatial_budget = self.config.fast_vlm_config.get("spatial_budget", 0.0)
-                vit_top_layer = 0
-                vit_bottom_layer = 22
-
-                # set hooks
-                top_attn_hook = ViT_Attn_Hook(self,layer_id=vit_top_layer, num_heads=16)
-                bottom_attn_hook = ViT_Attn_Hook(self,layer_id=vit_bottom_layer, num_heads=16)
-
-                # forward pass of CLIP-ViT
                 image_features = self.vision_tower(pixel_values, output_hidden_states=True)
                 selected_image_feature = image_features.hidden_states[vision_feature_layer]
 
@@ -981,42 +790,20 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
                 elif vision_feature_select_strategy == "full":
                     selected_image_feature = selected_image_feature
 
-                num_vision_tokens = selected_image_feature.shape[1]
-
                 image_features = self.multi_modal_projector(selected_image_feature)
-                image_features = torch.split(image_features, image_num_patches, dim=0) # tuple (torch.Size([n, 576, 4096])],...)
-                
 
-                if alpha_vision_token_budget < 1.0: # token selection
-                    selected_tokens_mask = self.HiCompRes_token_selection(
-                        top_layer_attn=top_attn_hook.get_attn(),
-                        bottom_layer_attn=bottom_attn_hook.get_attn(),
-                        num_patches=image_num_patches,
-                        full_image_patch=0,
-                        num_vision_tokens=num_vision_tokens,
-                        alpha_vision_token_budget=alpha_vision_token_budget,
-                        beta_sub_images_budget=beta_sub_images_budget,
-                        image_sizes=image_sizes,
-                    )
-                else:
-                    selected_tokens_mask = tuple([torch.ones(image_feature.shape[:2], dtype=torch.bool) for image_feature in image_features])
-                
-                # add spatial tokens (Baseline)
-                num_spatial_tokens = int(num_vision_tokens * spatial_budget)
-                if num_spatial_tokens > 0:
-                    selected_tokens_mask = self.add_spatial_tokens(masks=selected_tokens_mask, num_spatial_tokens=num_spatial_tokens)
-                   
+                image_features = torch.split(image_features, image_num_patches, dim=0)
+
+                # NOTE we only support multimodal_patch_merge_type == "spatial_unpad"
+
                 image_features, feature_lens = self.pack_image_features(
-                    image_features, 
+                    image_features,
                     image_sizes,
-                    image_newline=self.image_newline, # value None or self.image_newline
-                    image_features_masks=selected_tokens_mask
+                    image_newline=self.image_newline,
                 )
 
-                # print(f"HiResOpt features: {image_features.shape}")
-
                 inputs_embeds = inputs_embeds.to(image_features.dtype)
-                inputs_embeds, attention_mask, position_ids, labels, self.vit_to_llm_mapping = self._merge_input_ids_with_image_features(
+                inputs_embeds, attention_mask, position_ids, labels, _ = self._merge_input_ids_with_image_features(
                     image_features,
                     feature_lens,
                     inputs_embeds,
@@ -1034,9 +821,6 @@ class LlavaNextForConditionalGeneration(LlavaNextPreTrainedModel):
             # In case input_ids.shape[1] == 1 & pixel_values==None & past_key_values != None, we are in the case of
             # generation with cache
             elif past_key_values is not None and pixel_values is not None and input_ids.shape[1] == 1:
-                if self.prefill_time < 0:
-                    self.prefill_time = time.time()
-                    # print("Prefilling time: ", self.prefill_time)
                 # Retrieve the first layer to inspect the logits and mask out the hidden states
                 # that are set to 0
                 first_layer_past_key_value = past_key_values[0][0][:, :, :, 0]

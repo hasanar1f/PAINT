@@ -19,11 +19,6 @@ model = LlavaForConditionalGeneration.from_pretrained(
 )
 processor = AutoProcessor.from_pretrained(model_id)
 
-model.config.fast_vlm_config = {
-    "spatial_budget": 0,
-    "alpha_vision_token_budget": 1,
-}
-
 
 if quantization is False: # hot fix for: .to` is not supported for `4-bit` or `8-bit` bitsandbytes models. 
     # Please use the model as it is, since the model has already been set to the correct devices and casted to the correct `dtype`.

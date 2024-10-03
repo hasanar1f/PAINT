@@ -84,7 +84,6 @@ class LlavaConfig(PretrainedConfig):
         projector_hidden_act="gelu",
         vision_feature_select_strategy="default",
         vision_feature_layer=-2,
-        fast_vlm_config=None,
         **kwargs,
     ):
         self.ignore_index = ignore_index

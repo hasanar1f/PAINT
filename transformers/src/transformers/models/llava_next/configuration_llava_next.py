@@ -89,17 +89,8 @@ class LlavaNextConfig(PretrainedConfig):
         vision_feature_layer=-2,
         image_grid_pinpoints=None,
         tie_word_embeddings=False,
-        fast_vlm_config=None,
         **kwargs,
     ):
-        # self.fast_vlm_config = {
-        #     "multiple_patch": True,
-        #     "drop_percentage": 0.0,
-        #     "full_image_percentage": 0.5,
-        #     "vit_front_layers": [0],
-        #     "vit_back_layers": [22],
-        # } if fast_vlm_config is None else fast_vlm_config
-
         self.ignore_index = ignore_index
         self.image_token_index = image_token_index
         self.projector_hidden_act = projector_hidden_act

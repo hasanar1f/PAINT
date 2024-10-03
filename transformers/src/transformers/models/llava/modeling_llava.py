@@ -20,7 +20,6 @@ from typing import List, Optional, Tuple, Union
 import torch
 import torch.utils.checkpoint
 from torch import nn
-import torch.nn.functional as F
 
 from ... import PreTrainedModel
 from ...activations import ACT2FN
@@ -39,56 +38,6 @@ from .configuration_llava import LlavaConfig
 logger = logging.get_logger(__name__)
 
 _CONFIG_FOR_DOC = "LlavaConfig"
-
-class ViT_Attn_Hook:
-    def __init__(self, model, layer_id, num_heads):
-        self.model = model
-        self.layer_id = layer_id
-        self.num_heads = num_heads
-        self.outputs = {}
-        self.key_hook_handle = None
-        self.query_hook_handle = None
-
-        # register hooks
-        self._register_hooks()
-
-    def _hook_key(self, module, input, output):
-        self.outputs['key_output'] = output
-
-    def _hook_query(self, module, input, output):
-        self.outputs['query_output'] = output
-
-    def _register_hooks(self):
-        self.key_hook_handle = self.model.vision_tower.vision_model.encoder.layers[self.layer_id].self_attn.k_proj.register_forward_hook(self._hook_key)
-        self.query_hook_handle = self.model.vision_tower.vision_model.encoder.layers[self.layer_id].self_attn.q_proj.register_forward_hook(self._hook_query)
-    
-
-    def _remove_hooks(self):
-        if self.key_hook_handle:
-            self.key_hook_handle.remove()
-        if self.query_hook_handle:
-            self.query_hook_handle.remove()
-
-    def get_attn(self):
-        key = self.outputs.get('key_output')
-        query = self.outputs.get('query_output')
-
-        if key is None or query is None:
-            raise ValueError("Key or query output is not available. Ensure hooks are registered and the model has been run.")
-        
-        batch_size, num_tokens, embedding_dim = query.shape
-        head_dim = embedding_dim // self.num_heads
-
-        query = query.view(batch_size, num_tokens, self.num_heads, head_dim).transpose(1, 2)
-        key = key.view(batch_size, num_tokens, self.num_heads, head_dim).transpose(1, 2)
-
-        attn = (query @ key.transpose(-2, -1)) * head_dim ** -0.5
-        attn = F.softmax(attn, dim=-1)
-
-        # remove hooks
-        self._remove_hooks()
-
-        return attn
 
 
 @dataclass
@@ -296,9 +245,6 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
         )
         self.pad_token_id = self.config.pad_token_id if self.config.pad_token_id is not None else -1
         self.post_init()
-        self.vit_attentions = None
-        self.vit_to_llm_mapping = None
-        self.image_features = None
 
     def get_input_embeddings(self):
         return self.language_model.get_input_embeddings()
@@ -327,30 +273,6 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
         self.config.text_config.vocab_size = model_embeds.num_embeddings
         self.vocab_size = model_embeds.num_embeddings
         return model_embeds
-    
-    # ################################ key vision token oracle ################################
-
-    def add_spatial_tokens(self, mask, num_vision_tokens, num_spatial_tokens: int) -> torch.Tensor:
-        gap = num_vision_tokens // num_spatial_tokens
-        indices = torch.arange(0, num_vision_tokens-1, gap)
-        mask[indices] = True
-        return mask
-
-    def select_topk_tokens(self,bottom_layer_attn, num_vision_tokens, alpha_vision_token_budget):
-        # bottom_layer_attn: torch.tensor of shape: [1, num_heads, num_context, num_context]
-        # clip_attn_layer: list of int
-        # num_vision_tokens: int, usually 576
-        # alpha_vision_token_budget: float
-
-        # rank tokens
-        attn = bottom_layer_attn[0, :, 0, -num_vision_tokens:] # [num_heads, num_vision_tokens] # class attn
-        attn = attn.sum(dim=0) # aggregate over heads [num_vision_tokens]
-        mask = torch.zeros_like(attn, dtype=torch.bool) # [num_vision_tokens]
-
-        # select top-k tokens
-        num_topk = min(num_vision_tokens, int(num_vision_tokens * alpha_vision_token_budget))
-        mask[attn.topk(num_topk, largest=True).indices] = True
-        return mask
 
     def _merge_input_ids_with_image_features(self, image_features, inputs_embeds, input_ids, attention_mask, labels):
         num_images, num_image_patches, embed_dim = image_features.shape
@@ -364,6 +286,10 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
         batch_indices, non_image_indices = torch.where(input_ids != self.config.image_token_index)
 
         # 2. Compute the positions where text should be written
+        # Calculate new positions for text tokens in merged image-text sequence.
+        # `special_image_token_mask` identifies image tokens. Each image token will be replaced by `nb_text_tokens_per_images - 1` text tokens.
+        # `torch.cumsum` computes how each image token shifts subsequent text token positions.
+        # - 1 to adjust for zero-based indexing, as `cumsum` inherently increases indices by one.
         new_token_positions = torch.cumsum((special_image_token_mask * (num_image_patches - 1) + 1), -1) - 1
         nb_image_pad = max_embed_dim - 1 - new_token_positions[:, -1]
         if left_padding:
@@ -381,6 +307,8 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
             final_labels = torch.full(
                 (batch_size, max_embed_dim), self.config.ignore_index, dtype=input_ids.dtype, device=input_ids.device
             )
+        # In case the Vision model or the Language model has been offloaded to CPU, we need to manually
+        # set the corresponding tensors into their correct target device.
         target_device = inputs_embeds.device
         batch_indices, non_image_indices, text_to_overwrite = (
             batch_indices.to(target_device),
@@ -389,13 +317,14 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
         )
         attention_mask = attention_mask.to(target_device)
 
-        # 4. Fill the embeddings based on the mask
+        # 4. Fill the embeddings based on the mask. If we have ["hey" "<image>", "how", "are"]
+        # we need to index copy on [0, 577, 578, 579] for the text and [1:576] for the image features
         final_embedding[batch_indices, text_to_overwrite] = inputs_embeds[batch_indices, non_image_indices]
         final_attention_mask[batch_indices, text_to_overwrite] = attention_mask[batch_indices, non_image_indices]
         if labels is not None:
             final_labels[batch_indices, text_to_overwrite] = labels[batch_indices, non_image_indices]
 
-        # 5. Fill the embeddings corresponding to the images
+        # 5. Fill the embeddings corresponding to the images. Anything that is not `text_positions` needs filling (#29835)
         image_to_overwrite = torch.full(
             (batch_size, max_embed_dim), True, dtype=torch.bool, device=inputs_embeds.device
         )
@@ -412,7 +341,7 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
         final_attention_mask |= image_to_overwrite
         position_ids = (final_attention_mask.cumsum(-1) - 1).masked_fill_((final_attention_mask == 0), 1)
 
-        # 6. Mask out the embedding at padding positions
+        # 6. Mask out the embedding at padding positions, as we later use the past_key_value value to determine the non-attended tokens.
         batch_indices, pad_indices = torch.where(input_ids == self.pad_token_id)
         indices_to_mask = new_token_positions[batch_indices, pad_indices]
 
@@ -421,13 +350,7 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
         if labels is None:
             final_labels = None
 
-        # Calculate the image feature indices in the final embedding
-        image_indices = []
-        for i in range(batch_size):
-            image_positions = torch.where(image_to_overwrite[i])[0]
-            image_indices.append(image_positions)
-
-        return final_embedding, final_attention_mask, final_labels, position_ids, image_indices
+        return final_embedding, final_attention_mask, final_labels, position_ids
 
     @add_start_docstrings_to_model_forward(LLAVA_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=LlavaCausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
@@ -498,24 +421,8 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
 
             # 2. Merge text and images
             if pixel_values is not None and input_ids.shape[1] != 1:
-                # this is not memory efficient at all (output_hidden_states=True) will save all the hidden stated.
-                # we can hook the forward pass to get the hidden states of the selected layer only.
-
-                # ====================== HiCompRes ====================== # todo
-
-                # config params
-                if self.config.fast_vlm_config is not None:
-                    alpha_vision_token_budget = self.config.fast_vlm_config.get("alpha_vision_token_budget", 1.0)
-                    spatial_budget = self.config.fast_vlm_config.get("spatial_budget", 0.0)
-                vit_top_layer = 0 # no need for llava-1.5
-                vit_bottom_layer = 22
-
-
-                # set hooks
-                bottom_attn_hook = ViT_Attn_Hook(self,layer_id=vit_bottom_layer, num_heads=16)
-
-                # forward pass of CLIP-ViT
                 image_outputs = self.vision_tower(pixel_values, output_hidden_states=True)
+                # this is not memory efficient at all (output_hidden_states=True) will save all the hidden stated.
                 selected_image_feature = image_outputs.hidden_states[vision_feature_layer]
 
                 if vision_feature_select_strategy == "default":
@@ -526,30 +433,10 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
                     raise ValueError(
                         f"Unexpected select feature strategy: {self.config.vision_feature_select_strategy}"
                     )
-                num_vision_tokens=selected_image_feature.shape[1]
 
-                if alpha_vision_token_budget < 1.0: # token selection
-                    selected_tokens_mask = self.select_topk_tokens(
-                        bottom_layer_attn=bottom_attn_hook.get_attn(),
-                        num_vision_tokens=num_vision_tokens,
-                        alpha_vision_token_budget=alpha_vision_token_budget
-                    )
-                else:
-                    selected_tokens_mask = torch.ones(num_vision_tokens, dtype=torch.bool)
-
-                # add spatial tokens (Baseline)
-                num_spatial_tokens = int(num_vision_tokens * spatial_budget)
-                if num_spatial_tokens > 0:
-                    selected_tokens_mask = self.add_spatial_tokens(selected_tokens_mask, num_vision_tokens, num_spatial_tokens=num_spatial_tokens)
-
-                selected_image_feature = selected_image_feature[:, selected_tokens_mask.bool(), :]
-                
                 image_features = self.multi_modal_projector(selected_image_feature)
-
-                print(f"number of features: {image_features.shape}")
-
                 inputs_embeds = inputs_embeds.to(image_features.dtype)
-                inputs_embeds, attention_mask, labels, position_ids, self.vit_to_llm_mapping = self._merge_input_ids_with_image_features(
+                inputs_embeds, attention_mask, labels, position_ids = self._merge_input_ids_with_image_features(
                     image_features, inputs_embeds, input_ids, attention_mask, labels
                 )
 
