@@ -25,7 +25,7 @@ if quantization is False: # hot fix for: .to` is not supported for `4-bit` or `8
     model = model.to("cuda:0")
 
 raw_image = Image.open("images/kitchen.jpg")
-prompt = "USER: <image>\nExplain the image in detail.\nASSISTANT:"
+prompt = "USER: <image>\nIs there any refridgerator in the kitchen?\nASSISTANT:"
 inputs = processor(prompt, raw_image, return_tensors='pt').to("cuda:0", torch.float16)
 
 # Measure generation stage time
