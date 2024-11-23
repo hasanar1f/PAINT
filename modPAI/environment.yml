@@ -1,4 +1,4 @@
-name: pai
+name: modpai
 channels:
   - conda-forge
   - defaults
