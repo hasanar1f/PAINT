@@ -62,7 +62,7 @@ disable_torch_init()
 
 model_loader = ModelLoader(args.model)
 
-base_dir = "./log/" + args.model
+base_dir = "results/chair/" + args.model
 if not os.path.exists(base_dir):
     os.mkdir(base_dir)
 
@@ -85,7 +85,7 @@ if args.model == "llava-1.5" or args.model == "shikra":
     template = SYSTEM_MESSAGE + template
 
 for batch_id, data in tqdm(enumerate(coco_loader), total=len(coco_loader)):
-    if batch_id == 500:
+    if batch_id == 50:
         break
     img_id = data["img_id"]
     image = data["image"]

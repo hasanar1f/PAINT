@@ -209,7 +209,7 @@ class ModelLoader:
 
     def load_model(self):
         if self.model_name == "llava-1.5":
-            model_path = os.path.expanduser("/path/to/models/llava-v1.5-7b")
+            model_path = os.path.expanduser("liuhaotian/llava-v1.5-7b")
             self.tokenizer, self.vlm_model, self.image_processor, self.llm_model = (
                 load_llava_model(model_path)
             )

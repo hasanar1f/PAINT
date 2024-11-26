@@ -127,13 +127,13 @@ def combine_coco_captions(annotation_path):
 
 def combine_coco_instances(annotation_path):
 
-    if not os.path.exists('%s/instances_%s2017.json' %(annotation_path, 'val')):
+    if not os.path.exists('%s/instances_%s2014.json' %(annotation_path, 'val')):
         raise Exception("Please download MSCOCO instance annotations for val set")
-    if not os.path.exists('%s/instances_%s2017.json' %(annotation_path, 'train')):
+    if not os.path.exists('%s/instances_%s2014.json' %(annotation_path, 'train')):
         raise Exception("Please download MSCOCO instance annotations for train set")
 
-    val_instances = json.load(open('%s/instances_%s2017.json' %(annotation_path, 'val')))
-    train_instances = json.load(open('%s/instances_%s2017.json' %(annotation_path, 'train')))
+    val_instances = json.load(open('%s/instances_%s2014.json' %(annotation_path, 'val')))
+    train_instances = json.load(open('%s/instances_%s2014.json' %(annotation_path, 'train')))
     all_instances = {'info': train_instances['info'],
                      'licenses': train_instances['licenses'],
                      'type': train_instances['licenses'],
@@ -470,10 +470,10 @@ if __name__ == '__main__':
     
     parser.add_argument("--cache", type=str, default="chair.pkl",
                         help="pre inited CHAIR evaluator object, for fast loading.")
-    parser.add_argument("--coco_path", type=str, default='/path/to/coco/annotations',
+    parser.add_argument("--coco_path", type=str, default='modPAI/coco/annotations/',
                         help="only use for regenerating CHAIR evaluator object, will be ignored if uses cached evaluator.")
     
-    parser.add_argument("--save_path", type=str, default="./log/outputs.json",
+    parser.add_argument("--save_path", type=str, default="./results/outputs.json",
                         help="saving CHAIR evaluate and results to json, useful for debugging the caption model.")
     
     args = parser.parse_args()

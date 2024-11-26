@@ -77,7 +77,7 @@ pope_loader = torch.utils.data.DataLoader(
     drop_last=False,
 )
 
-base_dir = "./pope/" + args.model
+base_dir = "./results/pope/" + args.model
 if not os.path.exists(base_dir):
     os.mkdir(base_dir)
 

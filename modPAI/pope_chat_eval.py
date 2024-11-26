@@ -44,7 +44,7 @@ parser.add_argument(
 parser.add_argument(
     "--data-path",
     type=str,
-    default="/path/to/coco/val2014/",
+    default="/modPAI/coco/val2014",
     help="data path",
 )
 parser.add_argument("--batch-size", type=int, default=1)
@@ -82,7 +82,7 @@ pope_loader = torch.utils.data.DataLoader(
     drop_last=False,
 )
 
-base_dir = "./pope_chat/" + args.model
+base_dir = "results/pope_chat/" + args.model
 if not os.path.exists(base_dir):
     os.mkdir(base_dir)
 

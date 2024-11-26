@@ -1,7 +1,7 @@
 import math
 import types
 from typing import Optional, Tuple
-
+import pickle
 import torch
 import torch.nn as nn
 from transformers.models.llama.modeling_llama import apply_rotary_pos_emb
@@ -94,6 +94,9 @@ def llama_new_forward(
         )
     ### PAI's modification
 
+    # save attn_weights as pickle tensor
+    # attn_weights.save(tensor, f'attn_layer_{self.layer_idx}.pt')
+
     attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(
         query_states.dtype
     )
@@ -119,6 +122,7 @@ def llama_new_forward(
 
 def llama_modify(model, start_layer, end_layer, use_attn, alpha, use_cfg,
                  img_start_idx, img_end_idx):
+    # print("<<< modifying the attention in the llava forward pass >>>")
     for i in range(start_layer, end_layer):
         model.model.layers[i].self_attn.use_attn = use_attn
         model.model.layers[i].self_attn.alpha = alpha
