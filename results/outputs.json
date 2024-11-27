@@ -5,10 +5,10 @@
       "caption": "The image features a man sitting on a park bench surrounded by a large flock of pigeons. The man is wearing a red and white hat and appears to be enjoying the company of the birds. The birds are scattered around him, with some standing close to him and others further away.\n\n\nThe man is sitting on a park bench, and the birds are gathered around him, with some birds standing close to him and others a bit further away. The birds are of various sizes and colors, creating a lively and diverse scene. The man seems to be enjoying the company of the birds, as they gather around him.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "bird",
         "car",
-        "person",
-        "bench"
+        "bird",
+        "bench",
+        "person"
       ],
       "mscoco_generated_words": [
         "person",
@@ -168,9 +168,9 @@
         ]
       ],
       "mscoco_gt_words": [
-        "dining table",
+        "cup",
         "spoon",
-        "cup"
+        "dining table"
       ],
       "mscoco_generated_words": [
         "dining table",
@@ -326,8 +326,8 @@
       "caption": "The image features a herd of zebras and an elephant standing among them. The elephant is surrounded by a large group of zebras, with some of them standing very close to it. The elephant is standing in the middle of the herd, surrounded by the zebras. The scene is set in a dirt field, with the elephant standing in the middle of the herd.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "zebra",
-        "elephant"
+        "elephant",
+        "zebra"
       ],
       "mscoco_generated_words": [
         "zebra",
@@ -440,8 +440,8 @@
       ],
       "mscoco_gt_words": [
         "skateboard",
-        "person",
-        "bench"
+        "bench",
+        "person"
       ],
       "mscoco_generated_words": [
         "person",
@@ -595,8 +595,8 @@
       "caption": "The image features a man sitting on a wooden park bench overlooking a large body of water, possibly a lake or a river. He is wearing a suspender and is sitting on the bench, enjoying the beautiful view of the water. The man appears to be enjoying the serene atmosphere of the scene.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "person",
-        "bench"
+        "bench",
+        "person"
       ],
       "mscoco_generated_words": [
         "person",
@@ -679,10 +679,10 @@
       "caption": "The image shows a young man sitting on a park bench, reading a book while holding a yellow stuffed bird toy in his lap. The man is smiling, indicating that he is enjoying the reading experience. The book he is reading is placed on his lap, and the stuffed bird is also placed on his lap.\n\n\nThe scene takes place in a park setting, with a bench in the background. The bench is located in the middle of the scene, and the man is sitting on it. The book he is reading is placed on his lap, and the stuffed bird is also on his lap, adding a playful and fun element to the scene.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "book",
         "bird",
+        "bench",
         "person",
-        "bench"
+        "book"
       ],
       "mscoco_generated_words": [
         "person",
@@ -1236,10 +1236,10 @@
         ]
       ],
       "mscoco_gt_words": [
-        "kite",
         "sports ball",
-        "person",
-        "umbrella"
+        "kite",
+        "umbrella",
+        "person"
       ],
       "mscoco_generated_words": [
         "person",
@@ -1561,8 +1561,8 @@
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
         "chair",
-        "person",
-        "bench"
+        "bench",
+        "person"
       ],
       "mscoco_generated_words": [
         "person",
@@ -1829,9 +1829,9 @@
         ]
       ],
       "mscoco_gt_words": [
-        "person",
+        "bus",
         "clock",
-        "bus"
+        "person"
       ],
       "mscoco_generated_words": [
         "clock",
@@ -1974,10 +1974,10 @@
       "caption": "The image features a man and a woman riding a motorcycle together. The man is sitting on the back of the motorcycle, while the woman is sitting on the front. They are both smiling, indicating a happy and joyful moment.\n\n\nThe motorcycle is red and white in color, and it appears to be a dirt bike. The couple is wearing hats, adding a touch of style to the scene.\n\n\nThe couple is enjoying their ride, and the man is wearing a cowboy hat, while the woman is wearing a white hat. They are both wearing colorful hats, which adds a fun and lively touch to the scene.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
+        "suitcase",
         "motorcycle",
-        "bicycle",
         "person",
-        "suitcase"
+        "bicycle"
       ],
       "mscoco_generated_words": [
         "person",
@@ -2297,9 +2297,9 @@
       "caption": "The image features a man and a woman standing close to each other, both holding a frisbee. The woman is wearing a green shirt, while the man is wearing a camouflage shirt. They are both smiling and enjoying their time together, possibly playing frisbee. The woman is on the left side of the man, and they are both holding the frisbee.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "person",
+        "frisbee",
         "bottle",
-        "frisbee"
+        "person"
       ],
       "mscoco_generated_words": [
         "person",
@@ -2398,11 +2398,11 @@
       "caption": "The image features a group of five people, including three military officers and two women, gathered around a large cake. They are all smiling and posing for a photo, likely celebrating a special occasion. The cake is placed on a dining table, and the group appears to be enjoying the moment together.\n\n\nThe group consists of a man and a woman, both of whom are smiling and posing for a photo. The man is wearing a white shirt, while the woman is wearing a blue dress. The other three military officers are also smiling and posing for the picture. They are all dressed in white, which is a common color for military uniforms.\n\n\nThe cake is a large, white, and red-decorated cake, which the group is about to cut and enjoy. The cake is placed on a dining table, and the group appears to be enjoying the moment together.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "cake",
-        "dining table",
-        "knife",
+        "person",
         "fork",
-        "person"
+        "cake",
+        "knife",
+        "dining table"
       ],
       "mscoco_generated_words": [
         "person",
@@ -2717,8 +2717,8 @@
         ]
       ],
       "mscoco_gt_words": [
-        "skis",
-        "person"
+        "person",
+        "skis"
       ],
       "mscoco_generated_words": [
         "person",
@@ -2850,9 +2850,9 @@
       "caption": "The image features a woman standing next to a large pile of bananas, smiling and showing off her teeth. She is surrounded by numerous bunches of bananas, with some of them being yellow and some being black. The woman is wearing a colorful dress, which adds a vibrant touch to the scene.\n\n\nThe woman is standing in front of the bananas, and her smile and the presence of the bananas create a lively and cheerful atmosphere in the image. The bananas are arranged in various bunches, with some of them being yellow and some being black. The woman's smile and the abundance of bananas create a joyful and colorful scene.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "dining table",
+        "banana",
         "person",
-        "banana"
+        "dining table"
       ],
       "mscoco_generated_words": [
         "person",
@@ -3178,8 +3178,8 @@
       "caption": "The image features a bird bathing in a fountain, with water spraying out of it. The bird is standing in the water, enjoying the refreshing shower. The bird is located in the middle of the scene, surrounded by water splashing around it.\n\n\nThe bird is standing in the water, and the water is splashing around it, creating a unique and interesting scene. The bird appears to be enjoying the water, while the water splashes around it, creating a captivating visual.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "bird",
-        "bowl"
+        "bowl",
+        "bird"
       ],
       "mscoco_generated_words": [
         "bird",
@@ -3297,8 +3297,8 @@
       "caption": "The image depicts a large group of people walking down a street, holding umbrellas to protect themselves from the rain. They are walking under a tall, impressive stone structure, which appears to be a bridge or a large building. The people are holding umbrellas to shield themselves from the rain.\n\n\nThe scene is set in a city, with a large group of people walking down the street. They are holding umbrellas to protect themselves from the rain. The people are walking under a tall, impressive stone structure, which could be a bridge or a large building. The people are walking down the street, holding umbrellas to shield themselves from the rain.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "person",
         "umbrella",
+        "person",
         "handbag"
       ],
       "mscoco_generated_words": [
@@ -3454,11 +3454,11 @@
       "caption": "The image features a beautiful beach scene with a kite flying in the sky, surrounded by colorful kites. The kite is soaring high in the sky, while the colorful kites are flying nearby. The kites are of various sizes and colors, adding a vibrant and lively atmosphere to the scene.\n\n\nIn the background, there are several buildings, including a large yellow building, which adds to the beach's lively atmosphere. The buildings are situated near the beach, creating a picturesque view of the cityscape. The scene is a delightful combination of nature and urban life, with the kites and buildings creating a harmonious blend.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "umbrella",
-        "kite",
-        "person",
         "chair",
-        "airplane"
+        "person",
+        "umbrella",
+        "airplane",
+        "kite"
       ],
       "mscoco_generated_words": [
         "kite",
@@ -3753,11 +3753,11 @@
       "caption": "The image features a dog sitting on top of a large black dog, with a mouse riding on the back of the dog. The scene also includes a woman taking a picture of the dog and the mouse with her camera. There are several other people in the scene, with some standing closer to the dog and mouse, while others are further away.\n\n\nIn the scene, there are also two motorcycles, one in the background and another closer to the dog. Apart from the dog and mouse, there is a cat in the scene, which is sitting on the back of the dog. The image captures a unique and interesting moment, with the dog and mouse sharing a ride.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "cat",
-        "motorcycle",
         "dog",
+        "person",
+        "motorcycle",
         "mouse",
-        "person"
+        "cat"
       ],
       "mscoco_generated_words": [
         "dog",
@@ -3934,14 +3934,14 @@
         ]
       ],
       "mscoco_gt_words": [
-        "orange",
+        "apple",
+        "person",
+        "book",
         "couch",
         "bowl",
-        "dining table",
-        "book",
-        "person",
         "chair",
-        "apple"
+        "orange",
+        "dining table"
       ],
       "mscoco_generated_words": [
         "dining table",
@@ -4187,10 +4187,10 @@
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
         "suitcase",
-        "remote",
-        "couch",
         "person",
-        "chair"
+        "couch",
+        "chair",
+        "remote"
       ],
       "mscoco_generated_words": [
         "person",
@@ -4351,15 +4351,15 @@
         ]
       ],
       "mscoco_gt_words": [
-        "potted plant",
-        "wine glass",
-        "dining table",
-        "knife",
-        "fork",
         "sandwich",
         "person",
+        "fork",
+        "wine glass",
+        "potted plant",
         "pizza",
-        "chair"
+        "chair",
+        "knife",
+        "dining table"
       ],
       "mscoco_generated_words": [
         "person",
@@ -4525,12 +4525,12 @@
         ]
       ],
       "mscoco_gt_words": [
-        "bottle",
-        "umbrella",
-        "cup",
-        "dining table",
         "person",
-        "chair"
+        "umbrella",
+        "bottle",
+        "cup",
+        "chair",
+        "dining table"
       ],
       "mscoco_generated_words": [
         "person",
@@ -4987,10 +4987,10 @@
       "caption": "The image features a large bowl filled with a delicious-looking vegetable stir-fry, which includes various vegetables such as cabbage, carrots, and onions. The dish is placed on a white plate, and the vegetables are mixed together in a tasty-looking dish. The vegetables are arranged in a visually appealing manner, making the dish look very appetizing.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "dining table",
+        "bowl",
         "carrot",
         "spoon",
-        "bowl"
+        "dining table"
       ],
       "mscoco_generated_words": [
         "bowl",
@@ -5180,11 +5180,11 @@
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
         "bed",
-        "person",
         "bench",
+        "person",
         "book",
-        "bicycle",
         "backpack",
+        "bicycle",
         "cell phone"
       ],
       "mscoco_generated_words": [
@@ -5344,11 +5344,11 @@
       "caption": "The image captures a baseball game in progress, with a baseball player swinging a bat at home plate. There are several other players on the field, with some of them wearing red and white uniforms. A catcher is also present, wearing a yellow and black uniform.\n\n\nIn the scene, there are multiple players on the field, with some of them wearing red and white uniforms. A catcher is also present, wearing a yellow and black uniform. The baseball player is in the middle of his swing, with the catcher and other players watching the play. The scene captures the excitement and action of a baseball game.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "baseball bat",
-        "sports ball",
         "baseball glove",
+        "person",
         "bench",
-        "person"
+        "sports ball",
+        "baseball bat"
       ],
       "mscoco_generated_words": [
         "person",
@@ -5628,11 +5628,11 @@
       "caption": "The image features a computer monitor sitting on a desk in a room. The monitor is turned on, and it appears to be a laptop computer. The laptop is placed on a table, and it is turned on. The room appears to be a library or a study area, as there are several books in the background.\n\n\nThere are multiple books scattered around the room, with some of them placed on the table and others on the floor. The books are of various sizes and are likely related to the study area. The room seems to be a comfortable and organized space for studying or working.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "tv",
         "laptop",
-        "dining table",
+        "person",
         "book",
-        "person"
+        "tv",
+        "dining table"
       ],
       "mscoco_generated_words": [
         "laptop",
@@ -6080,14 +6080,14 @@
         ]
       ],
       "mscoco_gt_words": [
-        "oven",
-        "bottle",
-        "cake",
-        "cup",
         "bowl",
+        "pizza",
+        "bottle",
+        "cup",
+        "oven",
+        "cake",
         "knife",
-        "sink",
-        "pizza"
+        "sink"
       ],
       "mscoco_generated_words": [
         "dining table",
@@ -6198,8 +6198,8 @@
       "caption": "The image features a basket filled with a variety of fruits and vegetables, including bananas, apples, and pears. There are several bananas in the basket, with some of them being yellow and ripe, while others are green and unripe. The bananas are in various stages of ripeness, indicating a mix of fruits and vegetables.\n\n\nThe basket is filled with a mix of fruits and vegetables, including bananas, apples, and pears. There are several bananas in the basket, with some of them being ripe and others being green and unripe. The bananas are in various stages of ripeness, suggesting a mix of fruits and vegetables.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "apple",
-        "banana"
+        "banana",
+        "apple"
       ],
       "mscoco_generated_words": [
         "banana",
@@ -6349,11 +6349,11 @@
       "caption": "The image features two young men riding skateboards down a sidewalk. They are both wearing white shirts and are enjoying their time together. One of the skateboarders is closer to the camera, while the other is further away.\n\n\nThe scene takes place on a sidewalk, with the skateboarders standing next to a white pole. The pole is located near the center of the image, and the skateboarders are positioned around it. The skateboarders are in the middle of the scene, with one closer to the pole and the other further away.\n\n\nIn the background, there is a building, which adds to the urban atmosphere of the scene. The two young men are enjoying their time together, showcasing their skateboarding skills.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "handbag",
         "skateboard",
         "bench",
         "person",
-        "backpack"
+        "backpack",
+        "handbag"
       ],
       "mscoco_generated_words": [
         "skateboard",
@@ -6514,8 +6514,8 @@
       "caption": "The image features a train yard with several train cars on the tracks. The train cars are lined up in a row, with some of them being empty. The train cars are connected to each other, forming a long train.\n\n\nThe train yard is situated in a city, with a building in the background. The train yard is surrounded by power lines, which are visible in the image. The power lines are located above and below the train cars, creating a sense of depth and perspective.\n\nIn summary, the image captures a train yard with multiple train cars, showcasing the city's train infrastructure and the surrounding power lines.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "train",
         "car",
+        "train",
         "bowl"
       ],
       "mscoco_generated_words": [
@@ -6676,8 +6676,8 @@
       "caption": "The image features a woman leaning out of a train window, smiling and waving at the camera person. She is wearing a white shirt and is enjoying the moment. There are several other people in the scene, some of them standing near the train and others sitting on the train.\n\nIn the scene, there is a train with people on it, and a woman leaning out of the window, smiling and waving at the camera person. She is wearing a white shirt and is enjoying the moment. There are several other people in the scene, some of them standing near the train and others sitting on the train.",
       "mscoco_hallucinated_words": [],
       "mscoco_gt_words": [
-        "person",
-        "train"
+        "train",
+        "person"
       ],
       "mscoco_generated_words": [
         "person",
@@ -6840,11 +6840,11 @@
         ]
       ],
       "mscoco_gt_words": [
-        "spoon",
-        "oven",
         "bowl",
-        "dining table",
-        "toaster"
+        "spoon",
+        "toaster",
+        "oven",
+        "dining table"
       ],
       "mscoco_generated_words": [
         "dining table",
@@ -7297,14 +7297,1181 @@
         "Precision": 1.0,
         "F1": 0.6666666666666666
       }
+    },
+    {
+      "image_id": 2142,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "car",
+        "bird",
+        "bench",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 369831,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "cup",
+        "spoon",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 279208,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "elephant",
+        "zebra"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 581357,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "skateboard",
+        "bench",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 105303,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bench",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 252468,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bird",
+        "bench",
+        "person",
+        "book"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 521593,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "zebra"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 448492,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "broccoli"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 309418,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "person",
+        "toothbrush"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 106470,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "sports ball",
+        "kite",
+        "umbrella",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 216369,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "clock",
+        "bench"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 340451,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "chair",
+        "bench",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 8131,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "dog"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 101703,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bus",
+        "clock",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 349437,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "suitcase",
+        "motorcycle",
+        "person",
+        "bicycle"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 214810,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "cow"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 141205,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "frisbee",
+        "bottle",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 372113,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "person",
+        "fork",
+        "cake",
+        "knife",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 27297,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "teddy bear"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 118606,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "person",
+        "skis"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 8844,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "banana",
+        "person",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 368576,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "baseball bat",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 161470,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bowl",
+        "bird"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 207926,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "umbrella",
+        "person",
+        "handbag"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 579602,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "chair",
+        "person",
+        "umbrella",
+        "airplane",
+        "kite"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 223545,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "boat",
+        "bird"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 174871,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "dog",
+        "person",
+        "motorcycle",
+        "mouse",
+        "cat"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 458549,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "apple",
+        "person",
+        "book",
+        "couch",
+        "bowl",
+        "chair",
+        "orange",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 254379,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "suitcase",
+        "person",
+        "couch",
+        "chair",
+        "remote"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 235486,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "sandwich",
+        "person",
+        "fork",
+        "wine glass",
+        "potted plant",
+        "pizza",
+        "chair",
+        "knife",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 568883,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "person",
+        "umbrella",
+        "bottle",
+        "cup",
+        "chair",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 457453,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bicycle",
+        "car",
+        "traffic light"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 573395,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "surfboard",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 47149,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bowl",
+        "carrot",
+        "spoon",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 44260,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "apple"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 190829,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bed",
+        "bench",
+        "person",
+        "book",
+        "backpack",
+        "bicycle",
+        "cell phone"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 190738,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "baseball glove",
+        "person",
+        "bench",
+        "sports ball",
+        "baseball bat"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 540581,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "skateboard",
+        "person",
+        "handbag"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 262227,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "laptop",
+        "person",
+        "book",
+        "tv",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 247986,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "person",
+        "cell phone"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 304596,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "skateboard",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 113413,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "boat",
+        "bowl"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 51355,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bowl",
+        "pizza",
+        "bottle",
+        "cup",
+        "oven",
+        "cake",
+        "knife",
+        "sink"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 240273,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "banana",
+        "apple"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 119939,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "skateboard",
+        "bench",
+        "person",
+        "backpack",
+        "handbag"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 323758,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "car",
+        "train",
+        "bowl"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 342869,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "train",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 124236,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "bowl",
+        "spoon",
+        "toaster",
+        "oven",
+        "dining table"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 84982,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "potted plant",
+        "stop sign",
+        "traffic light"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
+    },
+    {
+      "image_id": 560851,
+      "caption": "The",
+      "mscoco_hallucinated_words": [],
+      "mscoco_gt_words": [
+        "surfboard",
+        "person"
+      ],
+      "mscoco_generated_words": [],
+      "hallucination_idxs": [],
+      "words": [
+        "the"
+      ],
+      "metrics": {
+        "CHAIRs": 0,
+        "CHAIRi": 0.0,
+        "Recall": 0.0,
+        "Len": 0.0,
+        "Precision": 0.0,
+        "F1": 0.0
+      }
     }
   ],
   "overall_metrics": {
-    "CHAIRs": 0.3,
+    "CHAIRs": 0.15,
     "CHAIRi": 0.08009153318077804,
-    "Recall": 0.6526946107784432,
+    "Recall": 0.3263473053892216,
     "Precision": 0.8320610687022901,
-    "F1": 0.7315436241610739,
-    "Len": 1.0978
+    "F1": 0.4688172043010753,
+    "Len": 0.5539000000000001
   }
 }

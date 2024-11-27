@@ -89,7 +89,7 @@ def llama_new_forward(
 
     if use_attn and not use_cfg:
         attn_weights[:, :, -1, img_start_idx:img_end_idx] = (
-            attn_weights[:, :, -1, img_start_idx:img_end_idx].abs() * self.alpha
+            attn_weights[:, :, -1, img_start_idx:img_end_idx].abs() * 6.9
             + attn_weights[:, :, -1, img_start_idx:img_end_idx]
         )
     ### PAI's modification
