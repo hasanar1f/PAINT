@@ -11,6 +11,13 @@ from .intern_vit_6b.modeling_intern_vit import InternVisionModel
 from .internvl_14b.configuration_internvl import InternVLConfig
 from .internvl_14b.modeling_internvl import InternVLModel
 
+def update_modpai_alpha(vit_attn, shared_dict):
+    # vit_attn: (batch_size, num_heads, num_layers, num_patches, num_patches)
+    # shared_dict['grounded_tokens']: (num_layers, batch_size, num_heads, num_patches, num_patches)
+    # goal is to find the sink/summary tokens and grounded tokens
+    # and use them to update alpha
+    print("Updating alpha")
+
 
 def is_intern_vit_6b_model(vision_tower_name):
     model_names = ["intern_vit_6b", "internvit_6b", "InternViT-6B", "internvit6b"]
@@ -101,7 +108,7 @@ class CLIPVisionTower(nn.Module):
             else:
                 image_forward_outs = self.vision_tower(images.to(device=self.device, dtype=self.dtype), output_hidden_states=True, output_attentions=True)
                 image_features = self.feature_select(image_forward_outs).to(images.dtype)
-                self.shared['vit_attn'] = image_forward_outs.attentions
+                update_modpai_alpha(image_forward_outs.attentions, self.shared_dict)
 
         return image_features
 

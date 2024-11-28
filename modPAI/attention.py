@@ -147,7 +147,7 @@ def llama_new_forward(
         print(attn_weights.shape)
         analyze_attention_weights(attn_weights, self.layer_idx, save_dir="after")
 
-    print(self.shared['vit_attn'][0].shape)
+    # print(self.shared_dict['vit_attn'][0].shape)
 
     attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(
         query_states.dtype
@@ -175,10 +175,10 @@ def llama_new_forward(
 def llama_modify(model, start_layer, end_layer, use_attn, alpha, use_cfg,
                  img_start_idx, img_end_idx):
     # print("<<< modifying the attention in the llava forward pass >>>")
-    shared = {'vit_attn': None}
-    model.model.vision_tower.shared = shared
+    shared_dict = {'vit_attn': None}
+    model.model.vision_tower.shared_dict = shared_dict
     for i in range(start_layer, end_layer):
-        model.model.layers[i].self_attn.shared = shared
+        model.model.layers[i].self_attn.shared_dict = shared_dict
         model.model.layers[i].self_attn.use_attn = use_attn
         model.model.layers[i].self_attn.alpha = alpha
         model.model.layers[i].self_attn.use_cfg = use_cfg
