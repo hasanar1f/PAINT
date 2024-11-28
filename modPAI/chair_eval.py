@@ -85,7 +85,7 @@ if args.model == "llava-1.5" or args.model == "shikra":
     template = SYSTEM_MESSAGE + template
 
 for batch_id, data in tqdm(enumerate(coco_loader), total=len(coco_loader)):
-    if batch_id == 50:
+    if batch_id == 1:
         break
     img_id = data["img_id"]
     image = data["image"]

@@ -5,6 +5,49 @@ import pickle
 import torch
 import torch.nn as nn
 from transformers.models.llama.modeling_llama import apply_rotary_pos_emb
+import os
+import matplotlib.pyplot as plt
+import torch
+
+def analyze_attention_weights(attn_weights, layer_idx, save_dir="attn_analysis"):
+    """
+    Analyze and visualize attention weights.
+    
+    Parameters:
+        attn_weights (torch.Tensor): The attention weight tensor of shape (batch_size, num_heads, q_len, kv_len).
+        layer_idx (int): The current layer index for labeling.
+        save_dir (str): Directory to save the analysis plots.
+    """
+    if not isinstance(attn_weights, torch.Tensor):
+        pass
+    
+    attn_weights = attn_weights.detach().cpu()
+    
+    mean = attn_weights.mean().item()
+    std = attn_weights.std().item()
+    max_val = attn_weights.max().item()
+    min_val = attn_weights.min().item()
+    
+    
+    batch_idx = 0  # Example: visualize the first sample in the batch
+    head_idx = 0   # Example: visualize the first attention head
+    
+    attn_matrix = attn_weights[batch_idx, head_idx]  # Shape: (q_len, kv_len)
+    
+    plt.figure(figsize=(10, 6))
+    plt.imshow(attn_matrix, cmap='viridis', aspect='auto')
+    plt.colorbar(label="Attention Value")
+    plt.xlabel("Key Tokens")
+    plt.ylabel("Query Tokens")
+    plt.title(f"Layer {layer_idx} - Attention Distribution (Head {head_idx})")
+    
+    # Save the plot
+    os.makedirs(save_dir, exist_ok=True)
+    save_path = f"{save_dir}/attn_layer_{layer_idx}_head_{head_idx}.png"
+    plt.savefig(save_path)
+    plt.close()
+    
+    print(f"Attention visualization saved to {save_path}")
 
 
 def llama_new_forward(
@@ -87,15 +130,24 @@ def llama_new_forward(
     else:
         use_cfg = False
 
+
+    # before mod
+    if isinstance(attn_weights, torch.Tensor) and self.use_cfg == False and self.layer_idx == 15 and attn_weights.shape[-1] == 999:
+        print(attn_weights.shape)
+        analyze_attention_weights(attn_weights, self.layer_idx, save_dir="before")
+
     if use_attn and not use_cfg:
         attn_weights[:, :, -1, img_start_idx:img_end_idx] = (
-            attn_weights[:, :, -1, img_start_idx:img_end_idx].abs() * 6.9
+            attn_weights[:, :, -1, img_start_idx:img_end_idx].abs() * self.alpha
             + attn_weights[:, :, -1, img_start_idx:img_end_idx]
         )
     ### PAI's modification
 
-    # save attn_weights as pickle tensor
-    # attn_weights.save(tensor, f'attn_layer_{self.layer_idx}.pt')
+    if isinstance(attn_weights, torch.Tensor) and self.use_cfg == False and self.layer_idx == 15 and attn_weights.shape[-1] == 999:
+        print(attn_weights.shape)
+        analyze_attention_weights(attn_weights, self.layer_idx, save_dir="after")
+
+    print(self.shared['vit_attn'][0].shape)
 
     attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(
         query_states.dtype
@@ -123,7 +175,10 @@ def llama_new_forward(
 def llama_modify(model, start_layer, end_layer, use_attn, alpha, use_cfg,
                  img_start_idx, img_end_idx):
     # print("<<< modifying the attention in the llava forward pass >>>")
+    shared = {'vit_attn': None}
+    model.model.vision_tower.shared = shared
     for i in range(start_layer, end_layer):
+        model.model.layers[i].self_attn.shared = shared
         model.model.layers[i].self_attn.use_attn = use_attn
         model.model.layers[i].self_attn.alpha = alpha
         model.model.layers[i].self_attn.use_cfg = use_cfg

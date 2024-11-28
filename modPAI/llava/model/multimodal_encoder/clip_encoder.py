@@ -99,8 +99,9 @@ class CLIPVisionTower(nn.Module):
                 image_features = self.feature_select(image_forward_outs).to(images.dtype)
                 image_features = [image_features, query_outs]
             else:
-                image_forward_outs = self.vision_tower(images.to(device=self.device, dtype=self.dtype), output_hidden_states=True)
+                image_forward_outs = self.vision_tower(images.to(device=self.device, dtype=self.dtype), output_hidden_states=True, output_attentions=True)
                 image_features = self.feature_select(image_forward_outs).to(images.dtype)
+                self.shared['vit_attn'] = image_forward_outs.attentions
 
         return image_features
 
