@@ -28,7 +28,7 @@ def get_top_ratio(attn):
     ratio = len(outlier_indices) / len(attn_np)
     return ratio
 
-def update_modpai_alpha(vit_attn, shared_dict, num_vision_tokens=576):
+def update_modpai_alpha(vit_attn, shared_dict, num_vision_tokens=576): # todo: ablation
     top_attn = vit_attn[0][0, :, 0, -num_vision_tokens:].sum(dim=0)
     bottom_attn = vit_attn[-2][0, :, 0, -num_vision_tokens:].sum(dim=0)
     _, top_tokens = torch.topk(top_attn, int(num_vision_tokens*0.25), largest=True)

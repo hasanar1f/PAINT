@@ -36,9 +36,8 @@ def analyze_attention_weights(attn_weights, layer_idx, save_dir="attn_analysis")
     
     plt.figure(figsize=(10, 6))
     plt.imshow(attn_matrix, cmap='viridis', aspect='auto')
-    plt.colorbar(label="Attention Value")
-    plt.xlabel("Key Tokens")
-    plt.ylabel("Query Tokens")
+    plt.xlabel("Attention Score")
+    plt.ylabel("Token index")
     plt.title(f"Layer {layer_idx} - Attention Distribution (Head {head_idx})")
     
     # Save the plot
@@ -132,7 +131,7 @@ def llama_new_forward(
 
     modpai = True # True or False
     
-    if modpai: ### MODPAI
+    if modpai: ### MODPAI # todo: ablation
         top_tokens = self.shared_dict['top_tokens'] + self.img_start_idx # offset by img_start_idx
         bottom_tokens = self.shared_dict['bottom_tokens'] + self.img_start_idx
         alpha = 0.7

@@ -18,4 +18,5 @@ python modPAI/chair_eval.py --model llava-1.5 --data-path modPAI/coco/val2014 --
 
 python modPAI/chair.py --cap_file results/chair/llava-1.5/chair_eval_layers_2-32_tokens_512_bs_1_attn_0.5_cfg_1.1.jsonl
 
+# remove the last ans or you can rename the file with hyper parameters
 rm results/chair/llava-1.5/chair_eval_layers_2-32_tokens_512_bs_1_attn_0.5_cfg_1.1.jsonl 
