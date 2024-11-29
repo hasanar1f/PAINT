@@ -2,6 +2,7 @@ import logging
 
 import torch
 import torch.nn as nn
+import numpy as np
 
 from transformers import CLIPVisionModel, CLIPImageProcessor, CLIPVisionConfig
 from .eva_clip.configuration_evaclip  import EvaCLIPVisionConfig
@@ -11,12 +12,36 @@ from .intern_vit_6b.modeling_intern_vit import InternVisionModel
 from .internvl_14b.configuration_internvl import InternVLConfig
 from .internvl_14b.modeling_internvl import InternVLModel
 
-def update_modpai_alpha(vit_attn, shared_dict):
-    # vit_attn: (batch_size, num_heads, num_layers, num_patches, num_patches)
-    # shared_dict['grounded_tokens']: (num_layers, batch_size, num_heads, num_patches, num_patches)
-    # goal is to find the sink/summary tokens and grounded tokens
-    # and use them to update alpha
-    print("Updating alpha")
+
+def get_top_ratio(attn):
+    attn_np = attn.cpu().numpy().flatten()
+
+    Q1 = np.percentile(attn_np, 25)
+    Q3 = np.percentile(attn_np, 75)
+    IQR = Q3 - Q1
+
+    # lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+
+    outlier_indices = np.where((attn_np > upper_bound))[0]
+
+    ratio = len(outlier_indices) / len(attn_np)
+    return ratio
+
+def update_modpai_alpha(vit_attn, shared_dict, num_vision_tokens=576):
+    top_attn = vit_attn[0][0, :, 0, -num_vision_tokens:].sum(dim=0)
+    bottom_attn = vit_attn[-2][0, :, 0, -num_vision_tokens:].sum(dim=0)
+    _, top_tokens = torch.topk(top_attn, int(num_vision_tokens*0.25), largest=True)
+    _, bottom_tokens = torch.topk(bottom_attn, int(num_vision_tokens*get_top_ratio(bottom_attn)), largest=True)
+    top_tokens_set = set(top_tokens.tolist())
+    bottom_tokens_set = set(bottom_tokens.tolist())
+    top_tokens = torch.tensor(list(top_tokens_set - bottom_tokens_set), dtype=top_tokens.dtype, device=top_tokens.device)
+
+    shared_dict['top_tokens'] = top_tokens
+    shared_dict['bottom_tokens'] = bottom_tokens
+
+    # print(f"top_tokens: {len(top_tokens)}, bottom_tokens: {len(bottom_tokens)}")
+
 
 
 def is_intern_vit_6b_model(vision_tower_name):

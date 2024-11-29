@@ -130,24 +130,34 @@ def llama_new_forward(
     else:
         use_cfg = False
 
+    modpai = True # True or False
+    
+    if modpai: ### MODPAI
+        top_tokens = self.shared_dict['top_tokens'] + self.img_start_idx # offset by img_start_idx
+        bottom_tokens = self.shared_dict['bottom_tokens'] + self.img_start_idx
+        alpha = 0.7
+        beta = 0.3
+        if use_attn and not use_cfg:
+            attn_weights[:, :, -1, top_tokens ] = (
+                attn_weights[:, :, -1, top_tokens].abs() * alpha
+                + attn_weights[:, :, -1, top_tokens]
+            )  
+            attn_weights[:, :, -1, bottom_tokens ] = (
+                attn_weights[:, :, -1, bottom_tokens].abs() * beta
+                + attn_weights[:, :, -1, bottom_tokens]
+            )
+        # if isinstance(attn_weights, torch.Tensor) and self.use_cfg == False and self.layer_idx == 15 and attn_weights.shape[-1] == 699:
+        #     analyze_attention_weights(attn_weights, self.layer_idx, save_dir="modpai")
+    else: # PAI original
+        if use_attn and not use_cfg:
+            attn_weights[:, :, -1, img_start_idx:img_end_idx] = (
+                attn_weights[:, :, -1, img_start_idx:img_end_idx].abs() * self.alpha
+                + attn_weights[:, :, -1, img_start_idx:img_end_idx]
+            )  
+        # if isinstance(attn_weights, torch.Tensor) and self.use_cfg == False and self.layer_idx == 15 and attn_weights.shape[-1] == 699:
+        #     analyze_attention_weights(attn_weights, self.layer_idx, save_dir="pai")
 
-    # before mod
-    if isinstance(attn_weights, torch.Tensor) and self.use_cfg == False and self.layer_idx == 15 and attn_weights.shape[-1] == 999:
-        print(attn_weights.shape)
-        analyze_attention_weights(attn_weights, self.layer_idx, save_dir="before")
 
-    if use_attn and not use_cfg:
-        attn_weights[:, :, -1, img_start_idx:img_end_idx] = (
-            attn_weights[:, :, -1, img_start_idx:img_end_idx].abs() * self.alpha
-            + attn_weights[:, :, -1, img_start_idx:img_end_idx]
-        )
-    ### PAI's modification
-
-    if isinstance(attn_weights, torch.Tensor) and self.use_cfg == False and self.layer_idx == 15 and attn_weights.shape[-1] == 999:
-        print(attn_weights.shape)
-        analyze_attention_weights(attn_weights, self.layer_idx, save_dir="after")
-
-    # print(self.shared_dict['vit_attn'][0].shape)
 
     attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(
         query_states.dtype
