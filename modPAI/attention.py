@@ -134,15 +134,15 @@ def llama_new_forward(
     if modpai: ### MODPAI # todo: ablation
         top_tokens = self.shared_dict['top_tokens'] + self.img_start_idx # offset by img_start_idx
         bottom_tokens = self.shared_dict['bottom_tokens'] + self.img_start_idx
-        alpha = 0.7
-        beta = 0.3
+        # self.alpha = 0.7
+        # self.beta = 0.3
         if use_attn and not use_cfg:
             attn_weights[:, :, -1, top_tokens ] = (
-                attn_weights[:, :, -1, top_tokens].abs() * alpha
+                attn_weights[:, :, -1, top_tokens].abs() * self.alpha
                 + attn_weights[:, :, -1, top_tokens]
             )  
             attn_weights[:, :, -1, bottom_tokens ] = (
-                attn_weights[:, :, -1, bottom_tokens].abs() * beta
+                attn_weights[:, :, -1, bottom_tokens].abs() * self.beta
                 + attn_weights[:, :, -1, bottom_tokens]
             )
         # if isinstance(attn_weights, torch.Tensor) and self.use_cfg == False and self.layer_idx == 15 and attn_weights.shape[-1] == 699:
@@ -181,7 +181,7 @@ def llama_new_forward(
     return attn_output, attn_weights, past_key_value
 
 
-def llama_modify(model, start_layer, end_layer, use_attn, alpha, use_cfg,
+def llama_modify(model, start_layer, end_layer, use_attn, alpha, beta, use_cfg,
                  img_start_idx, img_end_idx):
     # print("<<< modifying the attention in the llava forward pass >>>")
     shared_dict = {'vit_attn': None}
@@ -190,6 +190,7 @@ def llama_modify(model, start_layer, end_layer, use_attn, alpha, use_cfg,
         model.model.layers[i].self_attn.shared_dict = shared_dict
         model.model.layers[i].self_attn.use_attn = use_attn
         model.model.layers[i].self_attn.alpha = alpha
+        model.model.layers[i].self_attn.beta = beta
         model.model.layers[i].self_attn.use_cfg = use_cfg
         model.model.layers[i].self_attn.img_start_idx = img_start_idx
         model.model.layers[i].self_attn.img_end_idx = img_end_idx

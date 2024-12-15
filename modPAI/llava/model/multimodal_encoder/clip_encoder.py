@@ -28,19 +28,51 @@ def get_top_ratio(attn):
     ratio = len(outlier_indices) / len(attn_np)
     return ratio
 
-def update_modpai_alpha(vit_attn, shared_dict, num_vision_tokens=576): # todo: ablation
-    top_attn = vit_attn[0][0, :, 0, -num_vision_tokens:].sum(dim=0)
-    bottom_attn = vit_attn[-2][0, :, 0, -num_vision_tokens:].sum(dim=0)
-    _, top_tokens = torch.topk(top_attn, int(num_vision_tokens*0.25), largest=True)
-    _, bottom_tokens = torch.topk(bottom_attn, int(num_vision_tokens*get_top_ratio(bottom_attn)), largest=True)
+def spatial_attention_top_tokens(attn, num_tokens, spatial_token_ratio=0):
+    spatial_attention = attn.mean(dim=0)  
+    _, top_spatial_tokens = torch.topk(spatial_attention.sum(dim=1), int(num_tokens * spatial_token_ratio), largest=True)
+    return top_spatial_tokens
+
+
+def update_modpai_alpha(vit_attn, shared_dict, num_vision_tokens=576, local_token_ratio=0.25):
+    top_attn = vit_attn[0][0, :, 0, -num_vision_tokens:].sum(dim=0)  
+    bottom_attn = vit_attn[-2][0, :, 0, -num_vision_tokens:].sum(dim=0)  
+    
+    top_spatial_tokens = spatial_attention_top_tokens(vit_attn[0][0], num_vision_tokens)
+    _, top_tokens = torch.topk(top_attn, int(num_vision_tokens * local_token_ratio), largest=True)
+    print(f"Tokens selected from first layer (top_attn): {len(top_tokens)}")
+    print(f"Tokens selected based on spatial attention: {len(top_spatial_tokens)}")
+
+    top_tokens = torch.unique(torch.cat((top_tokens, top_spatial_tokens), dim=0))
+    print(f"Total combined top tokens (spatial + attention): {len(top_tokens)}")
+    _, bottom_tokens = torch.topk(bottom_attn, int(num_vision_tokens * get_top_ratio(bottom_attn)), largest=True)
+    print(f"Tokens selected from bottom layer (bottom_attn): {len(bottom_tokens)}")
+
     top_tokens_set = set(top_tokens.tolist())
     bottom_tokens_set = set(bottom_tokens.tolist())
-    top_tokens = torch.tensor(list(top_tokens_set - bottom_tokens_set), dtype=top_tokens.dtype, device=top_tokens.device)
 
+    final_top_tokens = list(top_tokens_set - bottom_tokens_set)
+    top_tokens = torch.tensor(final_top_tokens, dtype=top_tokens.dtype, device=top_tokens.device)
     shared_dict['top_tokens'] = top_tokens
     shared_dict['bottom_tokens'] = bottom_tokens
 
-    # print(f"top_tokens: {len(top_tokens)}, bottom_tokens: {len(bottom_tokens)}")
+    return shared_dict
+
+    
+# def update_modpai_alpha(vit_attn, shared_dict, top_token_ratio=0.25, num_vision_tokens=576): # todo: ablation
+#     top_attn = vit_attn[0][0, :, 0, -num_vision_tokens:].sum(dim=0)
+#     bottom_attn = vit_attn[-2][0, :, 0, -num_vision_tokens:].sum(dim=0)
+    
+#     _, top_tokens = torch.topk(top_attn, int(num_vision_tokens*top_token_ratio), largest=True)
+#     _, bottom_tokens = torch.topk(bottom_attn, int(num_vision_tokens*get_top_ratio(bottom_attn)), largest=True)
+#     top_tokens_set = set(top_tokens.tolist())
+#     bottom_tokens_set = set(bottom_tokens.tolist())
+#     top_tokens = torch.tensor(list(top_tokens_set - bottom_tokens_set), dtype=top_tokens.dtype, device=top_tokens.device)
+
+#     shared_dict['top_tokens'] = top_tokens
+#     shared_dict['bottom_tokens'] = bottom_tokens
+
+#     # print(f"top_tokens: {len(top_tokens)}, bottom_tokens: {len(bottom_tokens)}")
 
 
 
