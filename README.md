@@ -14,3 +14,20 @@ Paper: [PAINT: PAYING ATTENTION TO INFORMED TOKENS TO MITIGATE HALLUCINATION IN 
 conda env create -f modPAI/environment.yml
 conda activate modpai
 ```
+
+### 📌 Important Note
+
+This short paper was initially written as part of a graduate course project at Virginia Tech. Later, the paper was accepted at the [CVPR TMM-OpenWorld 2025 Workshop](https://cvpr25workshop.netlify.app/). However, due to funding limitations, the authors were unable to register, and as a result, the paper did not appear in the official CVPR proceedings.
+
+However, it's paper is available on [arXiv](https://arxiv.org/abs/2501.12206). If you find this paper or the code helpful in your research, please consider citing it using the following BibTeX entry:
+
+```bibtex
+@misc{arif2025paintpayingattentioninformed,
+  title={PAINT: Paying Attention to INformed Tokens to Mitigate Hallucination in Large Vision-Language Model}, 
+  author={Kazi Hasan Ibn Arif and Sajib Acharjee Dip and Khizar Hussain and Lang Zhang and Chris Thomas},
+  year={2025},
+  eprint={2501.12206},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2501.12206}, 
+}
